@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Recrutement Staff</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1c1c1e;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .form-container {
+      background: #2c2c2e;
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+      background: #3a3a3c;
+      color: #fff;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005ecb;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Formulaire de Recrutement</h2>
+    <form id="recrutementForm">
+      <label for="pseudo">Pseudo</label>
+      <input type="text" id="pseudo" name="pseudo" required>
+
+      <label for="age">Âge</label>
+      <input type="number" id="age" name="age" min="13" required>
+
+      <label for="poste">Poste souhaité</label>
+      <select id="poste" name="poste" required>
+        <option value="">-- Sélectionner --</option>
+        <option value="Helper">Helper</option>
+        <option value="Informateur">Informateur</option>
+      </select>
+
+      <label for="motivation">Pourquoi veux-tu rejoindre le staff ?</label>
+      <textarea id="motivation" name="motivation" rows="4" required></textarea>
+
+      <label for="experience">As-tu de l'expérience ? Si oui, où ?</label>
+      <textarea id="experience" name="experience" rows="3"></textarea>
+
+      <label for="dispo">Quelles sont tes disponibilités ?</label>
+      <input type="text" id="dispo" name="dispo" required>
+
+      <button type="submit">Envoyer la candidature</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("recrutementForm");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const pseudo = document.getElementById("pseudo").value;
+      const age = document.getElementById("age").value;
+      const poste = document.getElementById("poste").value;
+      const motivation = document.getElementById("motivation").value;
+      const experience = document.getElementById("experience").value;
+      const dispo = document.getElementById("dispo").value;
+
+      const webhookURL = "https://discord.com/api/webhooks/1394609064524386418/sbuTUf8cwk1PkpTbjcDmjbSRXRk2E01jzLo5vHDer--Nk_b_OnKmc5wjL8wTqISAxCRK";
+
+      const payload = {
+        content: "**📥 Nouvelle candidature reçue !**",
+        embeds: [{
+          title: "Candidature Staff",
+          color: 3447003,
+          fields: [
+            { name: "🧑 Pseudo", value: pseudo, inline: true },
+            { name: "🎂 Âge", value: age, inline: true },
+            { name: "🎯 Poste", value: poste, inline: false },
+            { name: "💬 Motivation", value: motivation, inline: false },
+            { name: "📚 Expérience", value: experience || "Aucune", inline: false },
+            { name: "📅 Disponibilités", value: dispo, inline: false }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("✅ Candidature envoyée !");
+          form.reset();
+        } else {
+          alert("❌ Une erreur est survenue.");
+        }
+      })
+      .catch(() => alert("❌ Impossible de contacter le webhook."));
+    });
+  </script>
+</body>
+</html>
