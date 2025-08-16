@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Recrutement Staff</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #36393f;
+      color: #dcddde;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .background-dots {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .dot {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(88, 101, 242, 0.3);
+      border-radius: 50%;
+      transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .container {
+      background: rgba(47, 49, 54, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(88, 101, 242, 0.2);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+      z-index: 10;
+      transform: translateY(0);
+      transition: all 0.3s ease;
+      animation: slideIn 0.6s ease-out;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #5865f2, #7289da, #5865f2);
+      border-radius: 16px 16px 0 0;
+      animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .header h1 {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #5865f2, #7289da);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: #b9bbbe;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+    .discord-login {
+      background: linear-gradient(135deg, #5865f2, #4752c4);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .discord-login::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .discord-login:hover::before {
+      left: 100%;
+    }
+    .discord-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(88, 101, 242, 0.4);
+    }
+    .login-form {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+    .login-form.show {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-card {
+      background: linear-gradient(135deg, rgba(88, 101, 242, 0.1), rgba(114, 137, 218, 0.1));
+      border: 2px solid rgba(88, 101, 242, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      display: none;
+      transition: all 0.3s ease;
+      animation: slideUp 0.5s ease-out;
+    }
+    .user-card.show {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .user-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(88, 101, 242, 0.2);
+    }
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #5865f2, #7289da);
+      border: 3px solid rgba(88, 101, 242, 0.5);
+      transition: all 0.3s ease;
+      object-fit: cover;
+    }
+    .user-avatar:hover {
+      transform: scale(1.1);
+      border-color: #5865f2;
+    }
+    .user-info h3 {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .user-info p {
+      color: #b9bbbe;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    .change-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #dcddde;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: auto;
+      transition: all 0.3s ease;
+    }
+    .change-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+    }
+    .form-group {
+      margin-bottom: 24px;
+      animation: slideInLeft 0.5s ease-out;
+      animation-fill-mode: both;
+    }
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .form-label {
+      color: #b9bbbe;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+      letter-spacing: 0.5px;
+    }
+    .form-input, .form-select, .form-textarea {
+      background: rgba(64, 68, 75, 0.8);
+      border: 2px solid rgba(32, 34, 37, 0.5);
+      border-radius: 8px;
+      color: #dcddde;
+      font-size: 16px;
+      padding: 12px 16px;
+      width: 100%;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #5865f2;
+      box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+      transform: translateY(-1px);
+    }
+    .form-input::placeholder {
+      color: #72767d;
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    .submit-btn, .verify-btn {
+      background: linear-gradient(135deg, #3ba55d, #2d7d43);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .submit-btn::before, .verify-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .submit-btn:hover::before, .verify-btn:hover::before {
+      left: 100%;
+    }
+    .submit-btn:hover, .verify-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(59, 165, 93, 0.4);
+    }
+    .verify-btn {
+      background: linear-gradient(135deg, #5865f2, #4752c4);
+    }
+    .verify-btn:hover {
+      box-shadow: 0 10px 30px rgba(88, 101, 242, 0.4);
+    }
+    .submit-btn:disabled, .verify-btn:disabled {
+      background: #4f545c;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .application-form {
+      display: none;
+    }
+    .application-form.show {
+      display: block;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .error {
+      background: linear-gradient(135deg, #f04747, #d73027);
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: none;
+      animation: shake 0.5s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .error.show {
+      display: block;
+    }
+    .glow {
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 20px rgba(88, 101, 242, 0.2); }
+      to { box-shadow: 0 0 30px rgba(88, 101, 242, 0.4); }
+    }
+  </style>
+</head>
+<body>
+  <canvas class="background-dots"></canvas>
+  
+  <div class="container glow">
+    <div class="header">
+      <h1>Rejoignez notre équipe</h1>
+      <p>Candidature pour le staff</p>
+    </div>
+
+    <div id="loginStep">
+      <button class="discord-login" id="loginBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0190 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9460 2.4189-2.1568 2.4189z"/>
+        </svg>
+        Se connecter avec Discord
+      </button>
+
+      <div class="login-form" id="loginForm">
+        <div class="error" id="errorMsg"></div>
+        
+        <div class="form-group">
+          <label class="form-label">Nom d'utilisateur</label>
+          <input type="text" class="form-input" id="username" placeholder="votrenom">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">ID utilisateur</label>
+          <input type="text" class="form-input" id="userId" placeholder="123456789012345678">
+        </div>
+        
+        <button class="verify-btn" id="verifyBtn">Vérifier</button>
+      </div>
+    </div>
+
+    <div class="user-card" id="userCard">
+      <div class="user-avatar" id="userAvatar"></div>
+      <div class="user-info">
+        <h3 id="displayName"></h3>
+        <p id="userTag"></p>
+      </div>
+      <button class="change-btn" id="changeBtn">Modifier</button>
+    </div>
+
+    <div class="application-form" id="applicationForm">
+      <div class="form-group">
+        <label class="form-label">Poste souhaité</label>
+        <select class="form-select" id="poste">
+          <option value="">Sélectionner un poste</option>
+          <option value="Helper">Helper</option>
+          <option value="Informateur">Informateur</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Motivation</label>
+        <textarea class="form-textarea" id="motivation" placeholder="Pourquoi souhaitez-vous rejoindre notre équipe ?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Expérience</label>
+        <textarea class="form-textarea" id="experience" placeholder="Décrivez votre expérience (optionnel)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Disponibilités</label>
+        <input type="text" class="form-input" id="dispo" placeholder="Vos horaires de disponibilité">
+      </div>
+
+      <button class="submit-btn" id="submitBtn">Envoyer la candidature</button>
+    </div>
+  </div>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1406389458852515965/4YntB-WMNMelIU2Ov29-BIEym5ZDSfqmhxOiijIvbbzcmMYFxgxj1MqXosem5AI2n6nS";
+    
+    let currentUser = null;
+    let dots = [];
+    let mouse = { x: 0, y: 0 };
+
+    const loginBtn = document.getElementById('loginBtn');
+    const loginForm = document.getElementById('loginForm');
+    const userCard = document.getElementById('userCard');
+    const applicationForm = document.getElementById('applicationForm');
+    const errorMsg = document.getElementById('errorMsg');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const changeBtn = document.getElementById('changeBtn');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function initDots() {
+      const canvas = document.querySelector('.background-dots');
+      const dotCount = 80;
+      
+      for (let i = 0; i < dotCount; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        dot.style.left = Math.random() * window.innerWidth + 'px';
+        dot.style.top = Math.random() * window.innerHeight + 'px';
+        canvas.appendChild(dot);
+        
+        dots.push({
+          element: dot,
+          originalX: parseFloat(dot.style.left),
+          originalY: parseFloat(dot.style.top),
+          currentX: parseFloat(dot.style.left),
+          currentY: parseFloat(dot.style.top)
+        });
+      }
+    }
+
+    function updateDots() {
+      dots.forEach(dot => {
+        const dx = mouse.x - dot.currentX;
+        const dy = mouse.y - dot.currentY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 100) {
+          const angle = Math.atan2(dy, dx);
+          const force = (100 - distance) / 100;
+          dot.currentX += Math.cos(angle) * force * 2;
+          dot.currentY += Math.sin(angle) * force * 2;
+        } else {
+          dot.currentX += (dot.originalX - dot.currentX) * 0.05;
+          dot.currentY += (dot.originalY - dot.currentY) * 0.05;
+        }
+        
+        dot.element.style.left = dot.currentX + 'px';
+        dot.element.style.top = dot.currentY + 'px';
+      });
+      
+      requestAnimationFrame(updateDots);
+    }
+
+    function createWaveEffect(x, y) {
+      dots.forEach(dot => {
+        const dx = x - dot.currentX;
+        const dy = y - dot.currentY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 150) {
+          const angle = Math.atan2(dy, dx);
+          const force = (150 - distance) / 150;
+          const pushDistance = force * 80;
+          
+          dot.currentX -= Math.cos(angle) * pushDistance;
+          dot.currentY -= Math.sin(angle) * pushDistance;
+        }
+      });
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    document.addEventListener('click', (e) => {
+      createWaveEffect(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('load', () => {
+      initDots();
+      updateDots();
+    });
+
+    loginBtn.addEventListener('click', () => {
+      loginForm.classList.add('show');
+      loginBtn.style.display = 'none';
+    });
+
+    verifyBtn.addEventListener('click', verifyUser);
+    changeBtn.addEventListener('click', resetForm);
+    submitBtn.addEventListener('click', submitApplication);
+
+    function verifyUser() {
+      const username = document.getElementById('username').value.trim();
+      const userId = document.getElementById('userId').value.trim();
+      
+      if (!username || !userId) {
+        showError('Veuillez remplir tous les champs');
+        return;
+      }
+      
+      if (!/^\d{17,19}$/.test(userId)) {
+        showError('ID utilisateur invalide');
+        return;
+      }
+
+      const userData = {
+        id: userId,
+        username: username,
+        avatar: null,
+        discriminator: '0',
+        global_name: username
+      };
+      
+      currentUser = userData;
+      showUserCard();
+      showApplicationForm();
+      hideError();
+    }
+
+    function showUserCard() {
+      const discordColors = ['#5865f2', '#7289da', '#99aab5', '#f04747', '#faa61a'];
+      const randomColor = discordColors[Math.floor(Math.random() * discordColors.length)];
+      
+      const userAvatar = document.getElementById('userAvatar');
+      userAvatar.style.background = `linear-gradient(135deg, ${randomColor}, #36393f)`;
+      userAvatar.style.display = 'flex';
+      userAvatar.style.alignItems = 'center';
+      userAvatar.style.justifyContent = 'center';
+      userAvatar.style.fontSize = '24px';
+      userAvatar.style.fontWeight = 'bold';
+      userAvatar.textContent = currentUser.username.charAt(0).toUpperCase();
+      
+      document.getElementById('displayName').textContent = currentUser.username;
+      document.getElementById('userTag').textContent = `ID: ${currentUser.id}`;
+      
+      userCard.classList.add('show');
+      loginForm.classList.remove('show');
+    }
+
+    function showApplicationForm() {
+      applicationForm.classList.add('show');
+    }
+
+    function resetForm() {
+      currentUser = null;
+      userCard.classList.remove('show');
+      applicationForm.classList.remove('show');
+      loginForm.classList.remove('show');
+      loginBtn.style.display = 'flex';
+      document.getElementById('username').value = '';
+      document.getElementById('userId').value = '';
+      document.getElementById('poste').value = '';
+      document.getElementById('motivation').value = '';
+      document.getElementById('experience').value = '';
+      document.getElementById('dispo').value = '';
+      hideError();
+    }
+
+    async function submitApplication() {
+      if (!currentUser) return;
+      
+      const poste = document.getElementById('poste').value;
+      const motivation = document.getElementById('motivation').value;
+      const experience = document.getElementById('experience').value;
+      const dispo = document.getElementById('dispo').value;
+      
+      if (!poste || !motivation || !dispo) {
+        showError('Veuillez remplir tous les champs obligatoires');
+        return;
+      }
+
+      const payload = {
+        embeds: [{
+          title: "📋 Nouvelle Candidature",
+          color: 5865522,
+          fields: [
+            { name: "👤 Utilisateur", value: `@${currentUser.username}`, inline: true },
+            { name: "🆔 ID", value: currentUser.id, inline: true },
+            { name: "💼 Poste", value: poste, inline: false },
+            { name: "💭 Motivation", value: motivation, inline: false },
+            { name: "📚 Expérience", value: experience || "Aucune expérience mentionnée", inline: false },
+            { name: "⏰ Disponibilités", value: dispo, inline: false }
+          ],
+          timestamp: new Date().toISOString(),
+          footer: { text: "Système de recrutement" }
+        }]
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Envoi en cours...';
+
+      try {
+        const response = await fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          submitBtn.textContent = '✅ Envoyé !';
+          setTimeout(() => {
+            alert('Candidature envoyée avec succès !');
+            resetForm();
+          }, 1000);
+        } else {
+          throw new Error('Erreur envoi');
+        }
+      } catch (error) {
+        showError('Erreur de connexion');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Envoyer la candidature';
+      }
+    }
+
+    function showError(message) {
+      errorMsg.textContent = message;
+      errorMsg.classList.add('show');
+      setTimeout(() => hideError(), 5000);
+    }
+
+    function hideError() {
+      errorMsg.classList.remove('show');
+    }
+  </script>
+</body>
+</html>
